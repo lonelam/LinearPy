@@ -237,7 +237,7 @@ def ParzenROC():
     P0 = len(data[0]) / (len(data[0]) + len(data[1]))
     xs = []
     ys = []
-    for h in np.linspace(1, 3, 100):
+    for h in np.linspace(0, 3, 10):
         FPR = 0
         Fcnt = len(testData[0])
         TPR = 0
@@ -254,6 +254,7 @@ def ParzenROC():
         TPR /= Tcnt
         xs.append(FPR)
         ys.append(TPR)
+    print(xs, ys)
     plt.plot(xs, ys, '-')
     plt.show()
 if __name__ == '__main__':
