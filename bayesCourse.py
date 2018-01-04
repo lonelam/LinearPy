@@ -2,10 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+
+preFemale = 0.3
+
+
 def Gauss(x, avg, var):
     return np.exp(-((x-avg) **2) / var / 2.0) / np.sqrt(2.0 * np.pi * var)
 def GaussN(X, Mu, Sigma):
-    return np.exp(np.dot((X - Mu) ,np.linalg.inv(Sigma) ).dot((X - Mu).transpose()) * (-0.5))
+    return np.exp(np.dot((X - Mu) ,np.linalg.pinv(Sigma) ).dot((X - Mu).transpose()) * (-0.5))
+
 def DataCollect():
     femaleDocPath = "data/girl.txt"
     maleDocPath = "data/boy.txt"
@@ -46,9 +51,14 @@ def classify(x, theta):
     if Gauss(x, theta[0][0], theta[0][1]) > Gauss(x, theta[1][0], theta[1][1]):
         return 0
     return 1
+def classifyN(X, Theta, t):
+    #print(GaussN(X, Theta[0][0], Theta[0][1]), GaussN(X, Theta[1][0], Theta[1][1]))
+    if (GaussN(X, Theta[0][0], Theta[0][1]) / GaussN(X, Theta[1][0], Theta[1][1])) > t:
+        return 0
+    return 1
 eps = 0.1
 def trainHW():
-    rawData = DataGen()
+    rawData = DataCollect()
     hwData = [[[x[0] for x in gender], [x[1] for x in gender]] for gender in rawData]
     theta = [
         [
@@ -59,10 +69,10 @@ def trainHW():
     ]
     return theta
 def drawFace(theta):
-    fig = plt.figure(figsize=plt.figaspect(0.5))
-    X = np.arange(0, 1, 0.005)
+    fig = plt.figure()
+    X = np.arange(0, 1, 0.05)
     xlen = len(X)
-    Y = np.arange(0, 1, 0.005)
+    Y = np.arange(0, 1, 0.05)
     ylen = len(Y)
     X, Y = np.meshgrid(X, Y)
     Z0 = np.zeros((xlen, ylen))
@@ -75,14 +85,16 @@ def drawFace(theta):
             #     Z0[i][j] = 1
             # else:
             #     Z1[i][j] = 0
-    ax = fig.add_subplot(1, 2,2,projection='3d')
-    bx = fig.add_subplot(1,2,1, projection='3d')
-    ax.plot_surface(X, Y, Z0 , cmap='PuBu')
-    bx.plot_surface(X, Y, Z1, cmap='RdPu')
+    ax = fig.add_subplot(1,1,1,projection='3d')
+    ax.plot_wireframe(X,Y,Z0,color = 'pink')
+    ax.plot_wireframe(X,Y,Z1,color='blue')
+    #bx = fig.add_subplot(1,2,1, projection='3d')
+    #ax.plot_surface(X, Y, Z0 , cmap='PuBu')
+    #  ax.plot_surface(X, Y, Z1, cmap='RdPu')
     plt.show()
 #just 1 dimension?
 def drawROC():
-    testData = [np.loadtxt('data/female.txt'), np.loadtxt('data/male.txt')]
+    testData = [np.loadtxt('data/girlnew.txt'), np.loadtxt('data/boynew.txt')]
     xs = []
     ys = []
     for th in range(140, 200):
@@ -105,7 +117,34 @@ def drawROC():
     plt.plot(xs, ys)
     plt.show()
 
-
+def drawROC2(theta):
+    testData = [np.loadtxt('data/girlnew.txt'), np.loadtxt('data/boynew.txt')]
+    xs = []
+    ys = []
+    for t in np.linspace(-10,10,100):
+        t = np.exp(t)
+        #print(t)
+        FPR = 0
+        Fcnt = len(testData[0])
+        TPR = 0
+        Tcnt = len(testData[1])
+        for person in testData[0]:
+            if classifyN(person[:2], theta, t) == 1:
+                FPR += 1
+                #print("err: ", person, 'male result female')
+        for person in testData[1]:
+            if classifyN(person[:2], theta, t) == 1:
+                TPR += 1
+                #print("err: ", person, 'female result male')
+        FPR /= Fcnt
+        TPR /= Tcnt
+        xs.append(FPR)
+        ys.append(TPR)
+    print(len(xs), len(ys))
+    plt.xlabel("Female Positive Rate")
+    plt.ylabel("Male Positive Rate")
+    plt.plot(xs, ys, '-o')
+    plt.show()
 
 def hTest():
     T = trainHeight()
@@ -127,5 +166,8 @@ def hTest():
     print(errCnt / totCnt)
 
 if __name__ == '__main__':
-    drawROC()
+    #drawROC()
     theta = trainHW()
+    print(theta)
+    drawROC2(theta)
+   # drawFace(theta)
