@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def normal_equation(X, y):
@@ -10,7 +12,7 @@ def normal_equation(X, y):
     return theta
 
 
-def gradientDescend(X, y, step= 0.1, initial_theta = None):
+def gradientDescend(X, y, step= 0.00001, initial_theta = None):
     x0 = np.ones((X.shape[0], 1))
     X = np.concatenate((x0, X), axis=1)
     if initial_theta == None:
@@ -18,7 +20,7 @@ def gradientDescend(X, y, step= 0.1, initial_theta = None):
     else:
         theta = initial_theta
     for i in range(100000):
-        g = X.transpose().dot(X.dot(theta) - y)
+        g = X.transpose().dot(1.0 / (1.0 - np.exp(X.dot(theta))) - y)
         #g = X.transpose().dot(X).dot(theta) - X.transpose().dot(y)
         #print(g)
         theta -= g * step
@@ -34,8 +36,29 @@ def linearPredict():
 def xorPredict():
     X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
     y = np.array([0, 1, 1, 0])
-    print(normal_equation(X, y))
-    print(gradientDescend(X, y))
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
+    theta = normal_equation(X, y)
+    print(theta)
+    netlen = 10
+    xs = np.linspace(0, 1, netlen)
+    ys = np.linspace(0, 1, netlen)
+    xs, ys = np.meshgrid(xs, ys)
+    zs = np.zeros((netlen, netlen))
+    for i in range(netlen):
+        for j in range(netlen):
+            zs[i][j] = np.array([1, xs[i][j], ys[i][j]]).dot(theta)
+    ax.plot_surface(xs, ys, zs, cmap="rainbow")
+    plt.show()
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
+    theta = gradientDescend(X, y)
+    print(theta)
+    for i in range(netlen):
+        for j in range(netlen):
+            zs[i][j] = 1.0 / (1.0 - np.exp(np.array([1, xs[i][j], ys[i][j]]).dot(theta)))
+    ax.plot_surface(xs, ys, zs, cmap="rainbow")
+    plt.show()
 def andPredict():
     X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
     y = np.array([0, 0, 0, 1])
@@ -44,4 +67,4 @@ def andPredict():
 
 if __name__ == '__main__':
     xorPredict()
-    linearPredict()
+    andPredict()

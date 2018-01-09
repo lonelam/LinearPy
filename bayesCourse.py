@@ -9,7 +9,7 @@ preFemale = 0.3
 def Gauss(x, avg, var):
     return np.exp(-((x-avg) **2) / var / 2.0) / np.sqrt(2.0 * np.pi * var)
 def GaussN(X, Mu, Sigma):
-    return np.exp(np.dot((X - Mu) ,np.linalg.pinv(Sigma) ).dot((X - Mu).transpose()) * (-0.5))
+    return np.exp(np.dot((X - Mu) ,np.linalg2.pinv(Sigma) ).dot((X - Mu).transpose()) * (-0.5))
 def windowF(u):
     return 1/np.sqrt(2*np.pi) * np.exp(-0.5*(u ** 2))
 def DataCollect():
@@ -112,7 +112,7 @@ def drawFace(theta, P0):
     plt.show()
 #just 1 dimension?
 def drawROC():
-    testData = [np.loadtxt('data/girlnew.txt'), np.loadtxt('data/boynew.txt')]
+    testData = [np.loadtxt('data/female.txt'), np.loadtxt('data/male.txt')]
     xs = []
     ys = []
     for th in range(140, 200):
@@ -137,7 +137,7 @@ def drawROC():
 
 
 def drawROC2(theta, P0):
-    testData = [np.loadtxt('data/girlnew.txt'), np.loadtxt('data/boynew.txt')]
+    testData = [np.loadtxt('data/female.txt'), np.loadtxt('data/male.txt')]
     xs = []
     ys = []
     for t in np.linspace(-10,10,100):
@@ -213,7 +213,7 @@ def Parzen(x, h, cls):
 
 
 def ParzenPlot():
-    h = 2
+    h = 1.2
     xs = []
     ys = []
     for th in range(140, 200):
@@ -227,12 +227,14 @@ def ParzenPlot():
         ys.append(Parzen(th, h, 1))
     plt.plot(xs, ys)
     plt.show()
+
 def ParzenClassify(x, h, P0):
     if Parzen(x, h, 0) * P0 > Parzen(x, h, 1) * (1 - P0):
         return 0
     return 1
+
 def ParzenROC():
-    testData = [np.loadtxt('data/girlnew.txt'), np.loadtxt('data/boynew.txt')]
+    testData = [np.loadtxt('data/female.txt'), np.loadtxt('data/male.txt')]
     data = DataCollect()
     P0 = len(data[0]) / (len(data[0]) + len(data[1]))
     xs = []
@@ -257,5 +259,13 @@ def ParzenROC():
     print(xs, ys)
     plt.plot(xs, ys, '-')
     plt.show()
+
 if __name__ == '__main__':
-    ParzenROC()
+    #用身高进行估计
+    hTest()
+    drawROC()
+    theta, P0 = trainHW01()
+    drawFace(theta, P0)
+    theta, P0 = trainHW()
+    drawROC2(theta, P0)
+    ParzenPlot()
