@@ -78,5 +78,3 @@ if __name__ == '__main__':
         trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
     p0V, p1V, pAb = trainNB0(trainMat, listClasses)
     print(p0V, "\n\n\n", p1V, "\n\n\n", pAb)
-
-
