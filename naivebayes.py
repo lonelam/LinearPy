@@ -195,23 +195,6 @@ if __name__ == "__main__":
     plot_prob(dataset)
     plt.show()
     plot_roc_crove(test_set, test_label, model, label_log_prob)'''
-    #program1()
+    program1()
     program2()
-    #program3()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-            
-    
-    
-    
-
-
-
+    # program3()

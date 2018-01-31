@@ -9,7 +9,7 @@ preFemale = 0.3
 def Gauss(x, avg, var):
     return np.exp(-((x-avg) **2) / var / 2.0) / np.sqrt(2.0 * np.pi * var)
 def GaussN(X, Mu, Sigma):
-    return np.exp(np.dot((X - Mu) ,np.linalg2.pinv(Sigma) ).dot((X - Mu).transpose()) * (-0.5))
+    return np.exp(np.dot((X - Mu) ,np.linalg.pinv(Sigma) ).dot((X - Mu).transpose()) * (-0.5))
 def windowF(u):
     return 1/np.sqrt(2*np.pi) * np.exp(-0.5*(u ** 2))
 def DataCollect():
@@ -262,10 +262,25 @@ def ParzenROC():
 
 if __name__ == '__main__':
     #用身高进行估计
-    hTest()
-    drawROC()
-    theta, P0 = trainHW01()
-    drawFace(theta, P0)
+    # hTest()
+    # drawROC()
+    # theta, P0 = trainHW01()
+    # drawFace(theta, P0)
     theta, P0 = trainHW()
+    rxs = []
+    rys = []
+    bxs = []
+    bys = []
+    for x in np.arange(145, 190, 0.1):
+        for y in np.arange(35, 90, 0.1):
+            if classifyN([x, y], theta, P0, 1) == 0:
+                rxs.append(x)
+                rys.append(y)
+            else:
+                bxs.append(x)
+                bys.append(y)
+    plt.scatter(rxs, rys, color="red")
+    plt.scatter(bxs, bys, color="blue")
+    plt.show()
     drawROC2(theta, P0)
     ParzenPlot()
