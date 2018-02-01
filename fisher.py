@@ -81,8 +81,8 @@ def S_w(S, X):
 
 
 #错误率估计
-def err_rate():
-    rX = DataCollect()
+def err_rate(rX):
+    #rX = DataCollect()
     err = 0
     tot = rX[0].shape[0] + rX[1].shape[0]
     for i in range(rX[0].shape[0]):
@@ -174,5 +174,5 @@ if __name__ == '__main__':
     bx.scatter(bxs, bys, color="blue")
     plt.show()
     # print(w_0)
-    err_rate()
+    err_rate(DataCollect())
 
