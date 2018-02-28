@@ -40,9 +40,4 @@ if __name__ == '__main__':
     feature = np.array(feature)
     for i in range(2):
         X[i] = np.dot(X[i], feature.T)
-
     fish(X)
-
-
-
-
