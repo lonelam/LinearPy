@@ -1,3 +1,5 @@
+#修改自《机器学习实战》示例代码
+#   author: lonelam
 import operator
 
 class treeNode:
@@ -16,14 +18,15 @@ class treeNode:
             child.disp(ind+1)
 
 def createTree(dataSet, minSup=1):
-    headerTable = {}
+    preHeaderTable = {}
     for trans, cnt in dataSet.items():
         for item in trans:
-            headerTable[item] = headerTable.get(item, 0) + cnt
-
-    for k, cnt in list(headerTable.items()):
-        if cnt < minSup:
-            del(headerTable[k])
+            preHeaderTable[item] = preHeaderTable.get(item, 0) + cnt
+    # print(preHeaderTable.values())
+    headerTable = {}
+    for k, cnt in list(preHeaderTable.items()):
+        if cnt >= minSup:
+            headerTable[k] = [cnt]
     freqItemSet = set(headerTable.keys())
     #并没有频繁项
     if len(freqItemSet) == 0:
@@ -107,14 +110,15 @@ def loadSimpDat():
 def createInitSet(dataSet):
     retDict = {}
     for trans in dataSet:
-        retDict[frozenset(trans)] = 1
+        tmp_key = frozenset(trans)
+        retDict[tmp_key] = retDict.get(tmp_key, 0) + 1
     return retDict
 if __name__ == '__main__':
     simpDat = loadSimpDat()
     initSet = createInitSet(simpDat)
+    print(initSet)
     myFpTree, myHeaderTab = createTree(initSet, 3)
     myFpTree.disp()
     freqItems = []
     mineTree(myFpTree, myHeaderTab, 3, set([]), freqItems)
     print(freqItems)
-
